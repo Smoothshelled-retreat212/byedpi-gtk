@@ -30,6 +30,11 @@
     <category>Security</category>
   </categories>
   <releases>
+    <release version="1.0.7" date="2026-07-15">
+      <description>
+        <p>Verify the byedpi core download against a pinned checksum, and make the About dialog follow the chosen language.</p>
+      </description>
+    </release>
     <release version="1.0.6" date="2026-07-15">
       <description>
         <p>Added Russian, Chinese, Korean, Persian, Vietnamese and Indonesian translations, fixed the tray icon not showing in portable builds, and removed the log view.</p>
