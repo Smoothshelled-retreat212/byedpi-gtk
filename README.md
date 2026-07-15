@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="data/icons/hicolor/scalable/apps/io.github.duckesteles.byedpigtk.svg" width="160" alt="byedpi-gtk logo">
+
 # byedpi-gtk
 
 A GTK4/libadwaita frontend for [byedpi](https://github.com/hufrea/byedpi) that
@@ -48,10 +50,20 @@ flatpak install --user ./byedpi-gtk.flatpak
 flatpak run io.github.duckesteles.byedpigtk
 ```
 
-### Arch Linux (AUR)
+### Arch Linux
+
+From the AUR:
 
 ```sh
 paru -S byedpi-gtk
+```
+
+Or install the package from the
+[latest release](https://github.com/duckesteles/byedpi-gtk/releases/latest)
+directly:
+
+```sh
+sudo pacman -U ./byedpi-gtk-*-any.pkg.tar.zst
 ```
 
 ### AppImage
