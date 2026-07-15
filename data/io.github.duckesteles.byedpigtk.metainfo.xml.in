@@ -30,6 +30,11 @@
     <category>Security</category>
   </categories>
   <releases>
+    <release version="1.0.6" date="2026-07-15">
+      <description>
+        <p>Added Russian, Chinese, Korean, Persian, Vietnamese and Indonesian translations, fixed the tray icon not showing in portable builds, and removed the log view.</p>
+      </description>
+    </release>
     <release version="1.0.5" date="2026-07-15">
       <description>
         <p>Fixed a missing module that prevented the app from starting in the packaged builds.</p>
