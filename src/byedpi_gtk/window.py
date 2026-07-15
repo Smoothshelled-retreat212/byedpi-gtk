@@ -2,6 +2,7 @@ from gi.repository import Adw, Gio, GLib, Gtk
 
 from . import ciadpi
 from .settings import SettingsDialog
+from .tray import TrayIcon
 from .updater import Updater
 
 
@@ -12,7 +13,8 @@ class MainWindow(Adw.ApplicationWindow):
         self.config = application.config
         self.proxy = ciadpi.ProxyManager()
         self.proxy.connect('state-changed', self._on_state_changed)
-        self.proxy.connect('log-line', self._on_log_line)
+        self._settings_dialog = None
+        self._tray = None
 
         self.set_default_size(420, 560)
         self.set_size_request(360, 480)
@@ -26,10 +28,13 @@ class MainWindow(Adw.ApplicationWindow):
         self._build_main_view()
 
         self._stack.set_visible_child_name('loading')
+        self.connect('close-request', self._on_close_request)
+        self.connect('notify::visible', lambda *_a: self._refresh_tray_menu())
+        self._setup_tray()
         self._start_update_check()
 
     def _build_loading_view(self):
-        status = Adw.StatusPage(
+        self._loading_status = Adw.StatusPage(
             icon_name=self.app.app_id,
             title='byedpi-gtk',
         )
@@ -43,29 +48,26 @@ class MainWindow(Adw.ApplicationWindow):
         self._loading_label.add_css_class('dim-label')
         box.append(self._loading_spinner)
         box.append(self._loading_label)
-        status.set_child(box)
-        self._stack.add_named(status, 'loading')
+        self._loading_status.set_child(box)
+        self._stack.add_named(self._loading_status, 'loading')
 
     def _build_main_view(self):
         toolbar = Adw.ToolbarView()
-        header = Adw.HeaderBar()
+        self._header = Adw.HeaderBar()
 
-        menu = Gio.Menu()
-        menu.append(_('About byedpi-gtk'), 'app.about')
-        menu.append(_('Quit'), 'app.quit')
-        menu_button = Gtk.MenuButton(
+        self._menu_button = Gtk.MenuButton(
             icon_name='open-menu-symbolic',
-            menu_model=menu,
             tooltip_text=_('Main Menu'),
         )
-        settings_button = Gtk.Button(
+        self._menu_button.set_menu_model(self._build_menu())
+        self._settings_button = Gtk.Button(
             icon_name='emblem-system-symbolic',
             tooltip_text=_('Settings'),
         )
-        settings_button.connect('clicked', self._on_settings_clicked)
-        header.pack_end(menu_button)
-        header.pack_end(settings_button)
-        toolbar.add_top_bar(header)
+        self._settings_button.connect('clicked', self._on_settings_clicked)
+        self._header.pack_end(self._menu_button)
+        self._header.pack_end(self._settings_button)
+        toolbar.add_top_bar(self._header)
 
         self.toast_overlay = Adw.ToastOverlay()
         content = Gtk.Box(
@@ -84,16 +86,15 @@ class MainWindow(Adw.ApplicationWindow):
         self._status_icon.set_pixel_size(96)
         self._status_icon.add_css_class('dim-label')
 
-        self._status_label = Gtk.Label(label=_('Disconnected'))
+        self._status_label = Gtk.Label()
         self._status_label.add_css_class('title-2')
 
         self._endpoint_label = Gtk.Label()
         self._endpoint_label.add_css_class('dim-label')
         self._update_endpoint_label()
 
-        self._toggle_button = Gtk.Button(label=_('Connect'))
+        self._toggle_button = Gtk.Button()
         self._toggle_button.add_css_class('pill')
-        self._toggle_button.add_css_class('suggested-action')
         self._toggle_button.set_halign(Gtk.Align.CENTER)
         self._toggle_button.connect('clicked', self._on_toggle_clicked)
 
@@ -105,6 +106,13 @@ class MainWindow(Adw.ApplicationWindow):
         self.toast_overlay.set_child(content)
         toolbar.set_content(self.toast_overlay)
         self._stack.add_named(toolbar, 'main')
+        self._apply_state(self.proxy.state)
+
+    def _build_menu(self):
+        menu = Gio.Menu()
+        menu.append(_('About byedpi-gtk'), 'app.about')
+        menu.append(_('Quit'), 'app.quit')
+        return menu
 
     def _update_endpoint_label(self):
         self._endpoint_label.set_text(
@@ -112,6 +120,59 @@ class MainWindow(Adw.ApplicationWindow):
                 self.config.get('listen_host'), self.config.get('listen_port')
             )
         )
+
+    def _setup_tray(self):
+        if not self.config.get('show_tray'):
+            return
+        self._tray = TrayIcon(self.app.app_id, 'byedpi-gtk')
+        self._tray.connect('activate', lambda _t: self._toggle_window())
+        self._tray.connect('menu-item', self._on_tray_menu)
+        self._tray.start()
+        self._refresh_tray_menu()
+
+    def _refresh_tray_menu(self):
+        if self._tray is None:
+            return
+        connected = self.proxy.is_active()
+        visible = self.get_visible()
+        self._tray.set_menu([
+            {
+                'id': 1,
+                'label': _('Hide') if visible else _('Show'),
+                'action': 'toggle_window',
+            },
+            {
+                'id': 2,
+                'label': _('Disconnect') if connected else _('Connect'),
+                'action': 'toggle_proxy',
+            },
+            {'id': 3, 'type': 'separator'},
+            {'id': 4, 'label': _('Quit'), 'action': 'quit'},
+        ])
+
+    def _on_tray_menu(self, tray, action):
+        if action == 'toggle_window':
+            self._toggle_window()
+        elif action == 'toggle_proxy':
+            self._on_toggle_clicked(None)
+        elif action == 'quit':
+            self.app.quit()
+
+    def _toggle_window(self):
+        if self.get_visible():
+            self.set_visible(False)
+        else:
+            self.set_visible(True)
+            self.present()
+        self._refresh_tray_menu()
+
+    def _on_close_request(self, window):
+        if self.config.get('close_to_tray') and self._tray is not None \
+                and self._tray.is_active():
+            self.set_visible(False)
+            self._refresh_tray_menu()
+            return True
+        return False
 
     def _start_update_check(self):
         updater = Updater(
@@ -144,9 +205,14 @@ class MainWindow(Adw.ApplicationWindow):
             self._start_proxy()
 
     def _on_settings_clicked(self, button):
-        dialog = SettingsDialog(self.config, self.app.localedir)
-        dialog.connect('closed', lambda *_a: self._update_endpoint_label())
+        dialog = SettingsDialog(self.config, self.app.localedir, self.proxy)
+        self._settings_dialog = dialog
+        dialog.connect('closed', self._on_settings_closed)
         dialog.present(self)
+
+    def _on_settings_closed(self, dialog):
+        self._settings_dialog = None
+        self._update_endpoint_label()
 
     def _on_toggle_clicked(self, button):
         if self.proxy.is_active():
@@ -163,15 +229,20 @@ class MainWindow(Adw.ApplicationWindow):
         )
 
     def _on_state_changed(self, proxy, state):
+        self._apply_state(state)
+        if state == ciadpi.STATE_FAILED:
+            self._toast(_('Could not start the proxy. Check the settings.'))
+        self._refresh_tray_menu()
+
+    def _apply_state(self, state):
         if state == ciadpi.STATE_STARTING:
             self._status_label.set_text(_('Connecting…'))
             self._status_icon.set_from_icon_name('network-transmit-symbolic')
+            self._toggle_button.set_label(_('Connect'))
             self._toggle_button.set_sensitive(False)
         elif state == ciadpi.STATE_RUNNING:
             self._status_label.set_text(_('Connected'))
-            self._status_icon.set_from_icon_name(
-                'network-vpn-symbolic'
-            )
+            self._status_icon.set_from_icon_name('network-vpn-symbolic')
             self._toggle_button.set_label(_('Disconnect'))
             self._toggle_button.remove_css_class('suggested-action')
             self._toggle_button.add_css_class('destructive-action')
@@ -183,7 +254,6 @@ class MainWindow(Adw.ApplicationWindow):
             self._status_label.set_text(_('Connection failed'))
             self._status_icon.set_from_icon_name('network-error-symbolic')
             self._reset_connect_button()
-            self._toast(_('Could not start the proxy. Check the settings.'))
         else:
             self._status_label.set_text(_('Disconnected'))
             self._status_icon.set_from_icon_name('network-offline-symbolic')
@@ -195,8 +265,16 @@ class MainWindow(Adw.ApplicationWindow):
         self._toggle_button.add_css_class('suggested-action')
         self._toggle_button.set_sensitive(True)
 
-    def _on_log_line(self, proxy, line):
-        pass
+    def retranslate(self):
+        self._loading_status.set_title('byedpi-gtk')
+        self._loading_label.set_text(_('Starting…'))
+        self._menu_button.set_tooltip_text(_('Main Menu'))
+        self._menu_button.set_menu_model(self._build_menu())
+        self._settings_button.set_tooltip_text(_('Settings'))
+        self._apply_state(self.proxy.state)
+        self._refresh_tray_menu()
+        if self._settings_dialog is not None:
+            self._settings_dialog.retranslate()
 
     def _toast(self, message):
         self.toast_overlay.add_toast(Adw.Toast(title=message, timeout=4))

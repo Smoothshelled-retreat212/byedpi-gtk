@@ -38,6 +38,11 @@ class Application(Adw.Application):
     def _on_config_changed(self, config, key):
         if key == 'theme':
             self._apply_theme()
+        elif key == 'language':
+            i18n.setup(self.localedir, config.get('language'))
+            for window in self.get_windows():
+                if hasattr(window, 'retranslate'):
+                    window.retranslate()
 
     def do_startup(self):
         Adw.Application.do_startup(self)
