@@ -1,0 +1,7 @@
+src/byedpi_gtk/ciadpi.py
+src/byedpi_gtk/main.py
+src/byedpi_gtk/settings.py
+src/byedpi_gtk/updater.py
+src/byedpi_gtk/window.py
+data/io.github.duckesteles.byedpigtk.desktop.in.in
+data/io.github.duckesteles.byedpigtk.metainfo.xml.in

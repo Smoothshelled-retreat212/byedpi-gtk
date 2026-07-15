@@ -1,0 +1,147 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: byedpi-gtk\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-07-15 00:00+0000\n"
+"Last-Translator: duckesteles\n"
+"Language-Team: Turkish\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "ciadpi binary not found"
+msgstr "ciadpi ikili dosyası bulunamadı"
+
+msgid "Invalid arguments: {}"
+msgstr "Geçersiz argümanlar: {}"
+
+msgid "Timed out waiting for proxy port"
+msgstr "Proxy bağlantı noktası beklenirken zaman aşımına uğradı"
+
+msgid "Settings"
+msgstr "Ayarlar"
+
+msgid "Appearance"
+msgstr "Görünüm"
+
+msgid "Theme"
+msgstr "Tema"
+
+msgid "Follow system"
+msgstr "Sistemi izle"
+
+msgid "Light"
+msgstr "Aydınlık"
+
+msgid "Dark"
+msgstr "Karanlık"
+
+msgid "Language"
+msgstr "Dil"
+
+msgid "Restart to fully apply a new language."
+msgstr "Yeni dilin tümüyle uygulanması için yeniden başlatın."
+
+msgid "Proxy"
+msgstr "Proxy"
+
+msgid "Local SOCKS5 endpoint exposed by byedpi."
+msgstr "byedpi tarafından sunulan yerel SOCKS5 uç noktası."
+
+msgid "Listen address"
+msgstr "Dinleme adresi"
+
+msgid "Port"
+msgstr "Bağlantı noktası"
+
+msgid "byedpi arguments"
+msgstr "byedpi argümanları"
+
+msgid "Connect on launch"
+msgstr "Açılışta bağlan"
+
+msgid "Start the proxy automatically when the app opens."
+msgstr "Uygulama açıldığında proxy'yi otomatik olarak başlat."
+
+msgid "Updates"
+msgstr "Güncellemeler"
+
+msgid "Checks run at startup over HTTPS. Nothing else is sent."
+msgstr "Denetimler açılışta HTTPS üzerinden yapılır. Başka hiçbir şey gönderilmez."
+
+msgid "Check for application updates"
+msgstr "Uygulama güncellemelerini denetle"
+
+msgid "Keep byedpi core up to date"
+msgstr "byedpi çekirdeğini güncel tut"
+
+msgid "Downloads the matching build from the byedpi project."
+msgstr "byedpi projesinden uygun yapıyı indirir."
+
+msgid "Checking for application updates…"
+msgstr "Uygulama güncellemeleri denetleniyor…"
+
+msgid "Could not check application updates."
+msgstr "Uygulama güncellemeleri denetlenemedi."
+
+msgid "Checking byedpi core…"
+msgstr "byedpi çekirdeği denetleniyor…"
+
+msgid "Unsupported architecture for automatic core updates."
+msgstr "Otomatik çekirdek güncellemeleri için desteklenmeyen mimari."
+
+msgid "Could not check byedpi core updates."
+msgstr "byedpi çekirdek güncellemeleri denetlenemedi."
+
+msgid "No byedpi core build for this architecture."
+msgstr "Bu mimari için byedpi çekirdek yapısı yok."
+
+msgid "Downloading byedpi core {}…"
+msgstr "byedpi çekirdeği indiriliyor {}…"
+
+msgid "Failed to install byedpi core: {}"
+msgstr "byedpi çekirdeği kurulamadı: {}"
+
+msgid "Starting…"
+msgstr "Başlatılıyor…"
+
+msgid "About byedpi-gtk"
+msgstr "byedpi-gtk Hakkında"
+
+msgid "Quit"
+msgstr "Çıkış"
+
+msgid "Main Menu"
+msgstr "Ana Menü"
+
+msgid "Disconnected"
+msgstr "Bağlantı kesildi"
+
+msgid "Connect"
+msgstr "Bağlan"
+
+msgid "A new version of byedpi-gtk is available: {}"
+msgstr "byedpi-gtk'nın yeni bir sürümü mevcut: {}"
+
+msgid "byedpi core updated to {}"
+msgstr "byedpi çekirdeği {} sürümüne güncellendi"
+
+msgid "Connecting…"
+msgstr "Bağlanılıyor…"
+
+msgid "Connected"
+msgstr "Bağlandı"
+
+msgid "Disconnect"
+msgstr "Bağlantıyı kes"
+
+msgid "Disconnecting…"
+msgstr "Bağlantı kesiliyor…"
+
+msgid "Connection failed"
+msgstr "Bağlantı başarısız"
+
+msgid "Could not start the proxy. Check the settings."
+msgstr "Proxy başlatılamadı. Ayarları denetleyin."
