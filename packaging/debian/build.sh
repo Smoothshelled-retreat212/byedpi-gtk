@@ -11,7 +11,6 @@ rm -rf "$WORK"
 mkdir -p "$STAGE/DEBIAN"
 
 BYEDPI_TAG="$(python3 -c "import json;print(json.load(open('$ROOT/packaging/byedpi-upstream.json'))['tag'])")"
-BYEDPI_VER="${BYEDPI_TAG#v}"
 case "$ARCH" in
   amd64) BYEDPI_ARCH=x86_64 ;;
   arm64) BYEDPI_ARCH=aarch64 ;;
@@ -24,8 +23,14 @@ meson setup "$WORK/meson" "$ROOT" --prefix=/usr -Dbuildtype=release
 meson install -C "$WORK/meson" --destdir "$STAGE"
 
 if [ -n "$BYEDPI_ARCH" ]; then
-  curl -fSL -o "$WORK/byedpi.tar.gz" \
-    "https://github.com/hufrea/byedpi/releases/download/${BYEDPI_TAG}/byedpi-${BYEDPI_VER}-${BYEDPI_ARCH}.tar.gz"
+  ASSET_URL="$(curl -fsSL "https://api.github.com/repos/hufrea/byedpi/releases/tags/${BYEDPI_TAG}" \
+    | SUFFIX="-${BYEDPI_ARCH}.tar.gz" python3 -c "
+import json, os, sys
+release = json.load(sys.stdin)
+suffix = os.environ['SUFFIX']
+print(next(a['browser_download_url'] for a in release['assets'] if a['name'].endswith(suffix)))
+")"
+  curl -fSL -o "$WORK/byedpi.tar.gz" "$ASSET_URL"
   tar -xzf "$WORK/byedpi.tar.gz" -C "$WORK"
   install -Dm755 "$WORK/ciadpi-${BYEDPI_ARCH}" "$STAGE/usr/bin/ciadpi"
 fi
