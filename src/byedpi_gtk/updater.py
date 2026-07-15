@@ -3,6 +3,7 @@ import os
 import platform
 import tarfile
 import tempfile
+import urllib.error
 import urllib.request
 from gi.repository import GLib, Gio, GObject
 
@@ -61,6 +62,11 @@ def _normalize(tag):
 def target_arch():
     machine = platform.machine().lower()
     return ARCH_MAP.get(machine)
+
+
+def _core_available():
+    from .ciadpi import find_binary
+    return find_binary() is not None
 
 
 def _pick_asset(assets, arch):
@@ -156,7 +162,6 @@ class Updater(GObject.Object):
         try:
             data = _fetch_latest(APP_REPO)
         except (urllib.error.URLError, OSError, ValueError):
-            result.messages.append(_('Could not check application updates.'))
             return
         latest = _normalize(data.get('tag_name'))
         result.app_latest = latest
@@ -165,19 +170,25 @@ class Updater(GObject.Object):
         ):
             result.app_update_available = True
 
+    def _warn_if_no_core(self, result, message):
+        if not _core_available():
+            result.messages.append(message)
+
     def _sync_ciadpi(self, result):
         self._report(_('Checking byedpi core…'))
         arch = target_arch()
         result.ciadpi_installed = read_installed_ciadpi_version()
         if arch is None:
-            result.messages.append(
-                _('Unsupported architecture for automatic core updates.')
+            self._warn_if_no_core(
+                result, _('No byedpi core build for this architecture.')
             )
             return
         try:
             data = _fetch_latest(BYEDPI_REPO)
         except (urllib.error.URLError, OSError, ValueError):
-            result.messages.append(_('Could not check byedpi core updates.'))
+            self._warn_if_no_core(
+                result, _('Could not download the byedpi core.')
+            )
             return
         latest = _normalize(data.get('tag_name'))
         result.ciadpi_latest = latest
@@ -186,8 +197,8 @@ class Updater(GObject.Object):
             return
         asset = _pick_asset(data.get('assets', []), arch)
         if asset is None:
-            result.messages.append(
-                _('No byedpi core build for this architecture.')
+            self._warn_if_no_core(
+                result, _('No byedpi core build for this architecture.')
             )
             return
         self._report(_('Downloading byedpi core {}…').format(latest))
@@ -197,9 +208,9 @@ class Updater(GObject.Object):
                 _download(asset['browser_download_url'], archive)
                 _extract_binary(archive, arch, _binary_path())
         except (urllib.error.URLError, OSError, tarfile.TarError,
-                FileNotFoundError) as error:
-            result.messages.append(
-                _('Failed to install byedpi core: {}').format(error)
+                FileNotFoundError):
+            self._warn_if_no_core(
+                result, _('Could not download the byedpi core.')
             )
             return
         with open(_version_state_path(), 'w', encoding='utf-8') as handle:
