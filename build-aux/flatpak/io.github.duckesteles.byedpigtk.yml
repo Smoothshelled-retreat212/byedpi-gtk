@@ -1,0 +1,27 @@
+id: io.github.duckesteles.byedpigtk
+runtime: org.gnome.Platform
+runtime-version: '48'
+sdk: org.gnome.Sdk
+command: byedpi-gtk
+finish-args:
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --talk-name=org.freedesktop.Notifications
+modules:
+  - name: byedpi
+    buildsystem: simple
+    build-commands:
+      - make
+      - install -Dm755 ciadpi /app/bin/ciadpi
+    sources:
+      - type: git
+        url: https://github.com/hufrea/byedpi.git
+        tag: v0.17.3
+
+  - name: byedpi-gtk
+    buildsystem: meson
+    sources:
+      - type: dir
+        path: ../..
