@@ -1,0 +1,36 @@
+name: Upstream watch
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare byedpi pin with latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PINNED=$(python3 -c "import json;print(json.load(open('packaging/byedpi-upstream.json'))['tag'])")
+          LATEST=$(gh api repos/hufrea/byedpi/releases/latest --jq .tag_name)
+          echo "Pinned: $PINNED  Latest: $LATEST"
+          if [ "$PINNED" = "$LATEST" ]; then
+            echo "Up to date."
+            exit 0
+          fi
+          TITLE="byedpi update available: $LATEST"
+          if gh issue list --state open --search "$TITLE in:title" \
+              --json title --jq '.[].title' | grep -qF "$TITLE"; then
+            echo "Issue already open."
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body \
+            "byedpi released $LATEST (pinned: $PINNED). Update packaging/byedpi-upstream.json and build-aux/flatpak manifest."

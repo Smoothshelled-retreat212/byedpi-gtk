@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            meson ninja-build gettext desktop-file-utils \
+            libgtk-4-dev libadwaita-1-dev python3-gi
+
+      - name: Configure
+        run: meson setup build --prefix=/usr
+
+      - name: Compile
+        run: meson compile -C build
+
+      - name: Test
+        run: meson test -C build --print-errorlogs
+
+      - name: Byte-compile modules
+        run: python3 -m compileall src/byedpi_gtk
+
+  metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install validators
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y appstream desktop-file-utils gettext
+
+      - name: Validate metainfo
+        run: |
+          sed 's/@BINDIR@//g' \
+            data/io.github.duckesteles.byedpigtk.metainfo.xml.in > /tmp/meta.xml
+          appstreamcli validate --no-net --explain /tmp/meta.xml || true
+
+      - name: Check translations
+        run: |
+          for po in po/*.po; do
+            msgfmt -c -o /dev/null "$po"
+          done
