@@ -1,0 +1,20 @@
+#!@PYTHON@
+import os
+import sys
+import signal
+import gettext
+
+sys.path.insert(1, '@moduledir@')
+
+VERSION = '@VERSION@'
+APP_ID = '@APP_ID@'
+LOCALEDIR = '@localedir@'
+PKGDATADIR = '@pkgdatadir@'
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+gettext.install('byedpi-gtk', LOCALEDIR)
+
+if __name__ == '__main__':
+    from byedpi_gtk.main import main
+    sys.exit(main(VERSION, APP_ID, PKGDATADIR, LOCALEDIR))

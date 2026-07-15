@@ -1,0 +1,12 @@
+CLAUDE.md
+memory-bank/
+build/
+builddir/
+dist/
+.flatpak-builder/
+__pycache__/
+*.pyc
+*.flatpak
+*.AppImage
+*.pkg.tar.zst
+*.deb
