@@ -4,17 +4,13 @@ from . import i18n
 
 
 class SettingsDialog(Adw.PreferencesDialog):
-    def __init__(self, config, localedir, proxy):
+    def __init__(self, config, localedir):
         super().__init__()
         self.config = config
         self.localedir = localedir
-        self.proxy = proxy
         self.set_search_enabled(False)
-        self._log_handler = None
-        self._log_buffer = None
         self._page = None
         self._build()
-        self.connect('closed', self._on_closed)
 
     def _build(self):
         self.set_title(_('Settings'))
@@ -25,19 +21,10 @@ class SettingsDialog(Adw.PreferencesDialog):
         self._page.add(self._build_proxy_group())
         self._page.add(self._build_behavior_group())
         self._page.add(self._build_updates_group())
-        self._page.add(self._build_logs_group())
         self.add(self._page)
 
     def retranslate(self):
-        if self._log_handler is not None:
-            self.proxy.disconnect(self._log_handler)
-            self._log_handler = None
         self._build()
-
-    def _on_closed(self, dialog):
-        if self._log_handler is not None:
-            self.proxy.disconnect(self._log_handler)
-            self._log_handler = None
 
     def _build_appearance_group(self):
         group = Adw.PreferencesGroup(title=_('Appearance'))
@@ -187,50 +174,3 @@ class SettingsDialog(Adw.PreferencesDialog):
         )
         group.add(core_row)
         return group
-
-    def _build_logs_group(self):
-        group = Adw.PreferencesGroup(title=_('Logs'))
-
-        clear_button = Gtk.Button(
-            icon_name='user-trash-symbolic',
-            tooltip_text=_('Clear logs'),
-            valign=Gtk.Align.CENTER,
-        )
-        clear_button.add_css_class('flat')
-        clear_button.connect('clicked', self._on_clear_logs)
-        group.set_header_suffix(clear_button)
-
-        self._log_buffer = Gtk.TextBuffer()
-        self._log_buffer.set_text('\n'.join(self.proxy.get_log()))
-        text_view = Gtk.TextView(
-            buffer=self._log_buffer,
-            editable=False,
-            cursor_visible=False,
-            monospace=True,
-            wrap_mode=Gtk.WrapMode.WORD_CHAR,
-            left_margin=8,
-            right_margin=8,
-            top_margin=8,
-            bottom_margin=8,
-        )
-        text_view.add_css_class('card')
-        scroller = Gtk.ScrolledWindow(
-            min_content_height=160,
-            max_content_height=240,
-            propagate_natural_height=True,
-            vexpand=False,
-        )
-        scroller.set_child(text_view)
-        group.add(scroller)
-
-        self._log_handler = self.proxy.connect('log-line', self._on_log_line)
-        return group
-
-    def _on_log_line(self, proxy, line):
-        end = self._log_buffer.get_end_iter()
-        prefix = '\n' if self._log_buffer.get_char_count() else ''
-        self._log_buffer.insert(end, prefix + line)
-
-    def _on_clear_logs(self, button):
-        self.proxy.clear_log()
-        self._log_buffer.set_text('')
