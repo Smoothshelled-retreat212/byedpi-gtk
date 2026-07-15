@@ -37,6 +37,8 @@ paru -S byedpi-gtk
 
 ### AppImage
 
+Pick the build for your CPU (`x86_64` or `aarch64`):
+
 ```sh
 chmod +x byedpi-gtk-x86_64.AppImage
 ./byedpi-gtk-x86_64.AppImage
@@ -44,8 +46,10 @@ chmod +x byedpi-gtk-x86_64.AppImage
 
 ### Debian / Ubuntu
 
+A single package covers every architecture:
+
 ```sh
-sudo apt install ./byedpi-gtk_*_amd64.deb
+sudo apt install ./byedpi-gtk_*_all.deb
 ```
 
 ## Usage
