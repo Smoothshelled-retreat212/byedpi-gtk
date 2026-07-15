@@ -34,7 +34,6 @@ cat > "$APPDIR/AppRun" <<'EOF'
 #!/usr/bin/env bash
 HERE="$(dirname "$(readlink -f "${0}")")"
 export PATH="$HERE/usr/bin:$PATH"
-export PYTHONPATH="$HERE/usr/lib/python3/dist-packages:$HERE/usr/lib/python3.12/site-packages:$PYTHONPATH"
 export XDG_DATA_DIRS="$HERE/usr/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 exec "$HERE/usr/bin/byedpi-gtk" "$@"
 EOF
