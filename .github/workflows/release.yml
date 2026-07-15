@@ -15,7 +15,7 @@ jobs:
       image: bilelmoussaoui/flatpak-github-actions:gnome-48
       options: --privileged
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build Flatpak bundle
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -33,7 +33,7 @@ jobs:
   appimage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install build dependencies
         run: |
@@ -55,7 +55,7 @@ jobs:
   deb:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install build dependencies
         run: |
@@ -83,7 +83,7 @@ jobs:
           pacman -Syu --noconfirm base-devel meson ninja glib2 gtk4 \
             libadwaita python-gobject git
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Stage local source tarball
         run: |
