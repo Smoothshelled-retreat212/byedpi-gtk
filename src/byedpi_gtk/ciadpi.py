@@ -20,6 +20,7 @@ STATE_FAILED = 'failed'
 PROBE_ATTEMPTS = 40
 PROBE_INTERVAL_MS = 50
 STOP_GRACE_MS = 2000
+LOG_LIMIT = 500
 
 
 def find_binary():
@@ -54,6 +55,19 @@ class ProxyManager(GObject.Object):
         self._host = '127.0.0.1'
         self._port = 1080
         self._stop_timeout = 0
+        self._log = []
+
+    def get_log(self):
+        return list(self._log)
+
+    def clear_log(self):
+        self._log.clear()
+
+    def _append_log(self, line):
+        self._log.append(line)
+        if len(self._log) > LOG_LIMIT:
+            del self._log[:len(self._log) - LOG_LIMIT]
+        self.emit('log-line', line)
 
     @GObject.Property(type=str, default=STATE_STOPPED)
     def state(self):
@@ -74,7 +88,7 @@ class ProxyManager(GObject.Object):
             return
         binary = find_binary()
         if not binary:
-            self.emit('log-line', _('ciadpi binary not found'))
+            self._append_log(_('ciadpi binary not found'))
             self._set_state(STATE_FAILED)
             return
         self._host = host
@@ -83,7 +97,7 @@ class ProxyManager(GObject.Object):
         try:
             argv += shlex.split(extra_args)
         except ValueError as error:
-            self.emit('log-line', _('Invalid arguments: {}').format(error))
+            self._append_log(_('Invalid arguments: {}').format(error))
             self._set_state(STATE_FAILED)
             return
         self._set_state(STATE_STARTING)
@@ -94,7 +108,7 @@ class ProxyManager(GObject.Object):
             )
             self._process = launcher.spawnv(argv)
         except GLib.Error as error:
-            self.emit('log-line', error.message)
+            self._append_log(error.message)
             self._process = None
             self._set_state(STATE_FAILED)
             return
@@ -117,7 +131,7 @@ class ProxyManager(GObject.Object):
             return
         if line is None:
             return
-        self.emit('log-line', line)
+        self._append_log(line)
         data.read_line_async(
             GLib.PRIORITY_DEFAULT, None, self._on_line, data
         )
@@ -135,7 +149,7 @@ class ProxyManager(GObject.Object):
             return False
         except OSError:
             if self._probe_count >= PROBE_ATTEMPTS:
-                self.emit('log-line', _('Timed out waiting for proxy port'))
+                self._append_log(_('Timed out waiting for proxy port'))
                 self.stop()
                 self._set_state(STATE_FAILED)
                 return False
