@@ -34,6 +34,26 @@ jobs:
       - name: Byte-compile modules
         run: python3 -m compileall src/byedpi_gtk
 
+      - name: Import every module from a clean install
+        run: |
+          meson install -C build --destdir "$PWD/staging"
+          MODDIR=$(find "$PWD/staging" -type d -name byedpi_gtk | head -1)
+          python3 - "$MODDIR" <<'PY'
+          import importlib, os, sys
+          moddir = sys.argv[1]
+          sys.path.insert(0, os.path.dirname(moddir))
+          import gettext
+          gettext.install('byedpi-gtk')
+          import gi
+          gi.require_version('Gtk', '4.0')
+          gi.require_version('Adw', '1')
+          names = [f[:-3] for f in os.listdir(moddir)
+                   if f.endswith('.py') and f != '__init__.py']
+          for name in sorted(names):
+              importlib.import_module('byedpi_gtk.' + name)
+          print('imported:', ', '.join(sorted(names)))
+          PY
+
   metadata:
     runs-on: ubuntu-latest
     steps:
