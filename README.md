@@ -95,15 +95,12 @@ Point your applications at the SOCKS5 endpoint shown in the window
 byedpi is a proxy, not a VPN: it only affects apps you point at it. Nothing is
 routed automatically.
 
-### Browsers
+### Firefox-based browsers (Firefox, LibreWolf…)
 
-- **Chromium-based** (Chrome, Helium, Brave…): launch with
-  `--proxy-server="socks5://127.0.0.1:1080"`, or set a system/extension proxy.
-- **Firefox-based** (Firefox, LibreWolf…): *Settings → Network Settings →
-  Manual proxy* → SOCKS Host `127.0.0.1`, Port `1080`, **SOCKS v5**, and enable
-  *Proxy DNS when using SOCKS v5*. If sites still fail, set
-  `network.http.http3.enable` to `false` in `about:config` (QUIC/UDP bypasses a
-  SOCKS proxy).
+*Settings → Network Settings → Manual proxy* → SOCKS Host `127.0.0.1`, Port
+`1080`, **SOCKS v5**, and enable *Proxy DNS when using SOCKS v5*. If sites still
+fail, set `network.http.http3.enable` to `false` in `about:config` (QUIC/UDP
+bypasses a SOCKS proxy).
 
 ### Flatpak apps
 
