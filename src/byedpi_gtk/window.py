@@ -11,6 +11,8 @@ try:
 except Exception:
     TrayIcon = None
 
+LOADING_WATCHDOG_MS = 8000
+
 
 class MainWindow(Adw.ApplicationWindow):
     def __init__(self, application):
@@ -234,6 +236,13 @@ class MainWindow(Adw.ApplicationWindow):
         updater.connect('progress', self._on_update_progress)
         updater.connect('finished', self._on_update_finished)
         updater.run_async()
+        GLib.timeout_add(LOADING_WATCHDOG_MS, self._loading_watchdog)
+
+    def _loading_watchdog(self):
+        if self._stack.get_visible_child_name() == 'loading' \
+                and ciadpi.find_binary():
+            self._stack.set_visible_child_name('main')
+        return False
 
     def _on_update_progress(self, updater, message):
         self._loading_label.set_text(message)

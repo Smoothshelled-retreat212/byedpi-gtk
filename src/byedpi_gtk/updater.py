@@ -11,7 +11,7 @@ APP_REPO = 'duckesteles/byedpi-gtk'
 BYEDPI_REPO = 'hufrea/byedpi'
 LATEST_TEMPLATE = 'https://api.github.com/repos/{}/releases/latest'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0'
-REQUEST_TIMEOUT = 15
+REQUEST_TIMEOUT = 10
 MAX_DOWNLOAD_BYTES = 64 * 1024 * 1024
 
 ARCH_MAP = {
@@ -60,6 +60,14 @@ def _fetch_latest(repo):
 
 def _normalize(tag):
     return (tag or '').lstrip('vV').strip()
+
+
+def _version_tuple(value):
+    parts = []
+    for chunk in _normalize(value).split('.'):
+        digits = ''.join(c for c in chunk if c.isdigit())
+        parts.append(int(digits) if digits else 0)
+    return tuple(parts)
 
 
 def target_arch():
@@ -164,7 +172,7 @@ class Updater(GObject.Object):
             self._check_app_update(result)
         if self._check_ciadpi:
             self._sync_ciadpi(result)
-        elif read_installed_ciadpi_version() is None:
+        elif not _core_available():
             self._sync_ciadpi(result)
         task.return_value(result)
 
@@ -176,9 +184,7 @@ class Updater(GObject.Object):
             return
         latest = _normalize(data.get('tag_name'))
         result.app_latest = latest
-        if latest and _normalize(self._app_version) and latest != _normalize(
-            self._app_version
-        ):
+        if latest and _version_tuple(latest) > _version_tuple(self._app_version):
             result.app_update_available = True
 
     def _warn_if_no_core(self, result, message):
@@ -202,9 +208,14 @@ class Updater(GObject.Object):
             )
             return
         latest = _normalize(release.get('tag_name'))
+        if not latest:
+            self._warn_if_no_core(
+                result, _('Could not download the byedpi core.')
+            )
+            return
         result.ciadpi_latest = latest
         have_binary = os.access(_binary_path(), os.X_OK)
-        if have_binary and latest and result.ciadpi_installed == latest:
+        if have_binary and result.ciadpi_installed == latest:
             return
         asset = _pick_asset(release.get('assets', []), arch)
         if asset is None:
