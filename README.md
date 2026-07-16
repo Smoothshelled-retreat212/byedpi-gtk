@@ -92,6 +92,34 @@ Point your applications at the SOCKS5 endpoint shown in the window
 (`127.0.0.1:1080` by default). Adjust the port and byedpi arguments under
 **Settings**.
 
+byedpi is a proxy, not a VPN: it only affects apps you point at it. Nothing is
+routed automatically.
+
+### Browsers
+
+- **Chromium-based** (Chrome, Helium, Brave…): launch with
+  `--proxy-server="socks5://127.0.0.1:1080"`, or set a system/extension proxy.
+- **Firefox-based** (Firefox, LibreWolf…): *Settings → Network Settings →
+  Manual proxy* → SOCKS Host `127.0.0.1`, Port `1080`, **SOCKS v5**, and enable
+  *Proxy DNS when using SOCKS v5*. If sites still fail, set
+  `network.http.http3.enable` to `false` in `about:config` (QUIC/UDP bypasses a
+  SOCKS proxy).
+
+### Flatpak apps
+
+Flatpak apps do **not** inherit a system-wide proxy. Configure the proxy inside
+the app (as above), or inject it into that app's sandbox:
+
+```sh
+flatpak override --user --env=all_proxy=socks5h://127.0.0.1:1080 <app-id>
+# undo with:
+flatpak override --user --unset-env=all_proxy <app-id>
+```
+
+Replace `<app-id>` with the app (e.g. `io.gitlab.librewolf-community`). The
+loopback address `127.0.0.1:1080` is reachable from inside the sandbox because
+byedpi-gtk shares the host network.
+
 ## Build from source
 
 Requires `meson`, `ninja`, `gtk4`, `libadwaita`, `python-gobject` and `gettext`.
