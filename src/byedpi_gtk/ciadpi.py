@@ -128,7 +128,7 @@ class ProxyManager(GObject.Object):
         self._probe_count += 1
         try:
             with socket.create_connection(
-                (self._host, self._port), timeout=0.2
+                (self._host, self._port), timeout=0.1
             ):
                 pass
             self._set_state(STATE_RUNNING)
@@ -166,5 +166,7 @@ class ProxyManager(GObject.Object):
             GLib.source_remove(self._stop_timeout)
             self._stop_timeout = 0
         self._process = None
-        if self._state != STATE_FAILED:
+        if self._state == STATE_STOPPING:
             self._set_state(STATE_STOPPED)
+        elif self._state in (STATE_STARTING, STATE_RUNNING):
+            self._set_state(STATE_FAILED)
