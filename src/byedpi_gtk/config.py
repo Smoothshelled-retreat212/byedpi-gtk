@@ -39,8 +39,20 @@ class Config(GObject.Object):
             return
         if isinstance(stored, dict):
             for key, value in stored.items():
-                if key in DEFAULTS and isinstance(value, type(DEFAULTS[key])):
+                if key in DEFAULTS and self._valid(key, value):
                     self._data[key] = value
+
+    def _valid(self, key, value):
+        default = DEFAULTS[key]
+        if isinstance(default, bool):
+            return isinstance(value, bool)
+        if isinstance(default, int):
+            if not isinstance(value, int) or isinstance(value, bool):
+                return False
+            if key == 'listen_port':
+                return 1 <= value <= 65535
+            return True
+        return isinstance(value, type(default))
 
     def _save(self):
         directory = os.path.dirname(self._path)
