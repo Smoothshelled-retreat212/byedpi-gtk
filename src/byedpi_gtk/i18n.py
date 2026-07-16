@@ -4,7 +4,7 @@ import os
 
 DOMAIN = 'byedpi-gtk'
 
-_ORIGINAL_LANGUAGE = os.environ.get('LANGUAGE')
+_ORIGINAL_LANGUAGE = os.environ.get('LANGUAGE') or None
 
 ENDONYMS = {
     'ar': 'العربية',

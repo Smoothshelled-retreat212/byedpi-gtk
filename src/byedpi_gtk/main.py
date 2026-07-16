@@ -40,9 +40,13 @@ class Application(Adw.Application):
             self._apply_theme()
         elif key == 'language':
             i18n.setup(self.localedir, config.get('language'))
-            for window in self.get_windows():
-                if hasattr(window, 'retranslate'):
-                    window.retranslate()
+            GLib.idle_add(self._retranslate_windows)
+
+    def _retranslate_windows(self):
+        for window in self.get_windows():
+            if hasattr(window, 'retranslate'):
+                window.retranslate()
+        return False
 
     def do_startup(self):
         Adw.Application.do_startup(self)
