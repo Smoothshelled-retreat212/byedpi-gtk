@@ -30,6 +30,11 @@
     <category>Security</category>
   </categories>
   <releases>
+    <release version="1.0.9" date="2026-07-16">
+      <description>
+        <p>Faster startup that no longer stalls on a slow network, clearer connection failures, and various robustness fixes.</p>
+      </description>
+    </release>
     <release version="1.0.8" date="2026-07-16">
       <description>
         <p>The byedpi core now updates itself to the latest upstream release automatically, and language switching is more robust.</p>
